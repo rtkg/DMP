@@ -29,7 +29,7 @@ ode_options=odeset('RelTol',options.RelTol,'AbsTol',options.AbsTol);
 %%%%%%%%INITIAL STATE VECTOR [q, dq, q_1,dq_1, ... , q_D,dq_D]%%%%%%%%
 nD=length(DMP.param);
 for i=1:nD
-   x0=[x0; DMP.param{i}.x0(1);0]; 
+   x0=[x0; DMP.param{i}.q0_ref;0]; 
 end
 
 %%%%%%%%%%%%%%%%%%CONTINOUS/DISCRETE STATE TRANSITION MATRIX A/A_%%%%%%%%

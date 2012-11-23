@@ -1,8 +1,12 @@
-function writeROSYaml(PC,path,kappa,P)
+function writeROSYaml(PC,path,kappa,P,t_tol)
 
-joints={'FFJ3','MFJ3'};
-for i=1:length(joints)
-   topics{i}={strcat('/sh_',lower(joints{i}),'_inverse_dynamics_controller/state'),strcat('/sh_',lower(joints{i}),'_inverse_dynamics_controller/command')}; 
+nJ=length(PC);
+
+%Map containing the ROS topics for publishing/subscribing
+for i=1:nJ
+   topics{i}={strcat('/sh_',lower(PC{i}.joint),'_inverse_dynamics_controller/state'), ...
+              strcat('/sh_',lower(PC{i}.joint),'_inverse_dynamics_controller/command')}; 
+   joints{i}=PC{i}.joint;
 end    
 topic_map=containers.Map(joints,topics);
 
@@ -12,12 +16,12 @@ fid=fopen(path,'w','n');
 %dlmwrite(path,'dof_config:','-append','delimiter',' ','precision',12,'newline','pc');
 fprintf(fid,'%s\n','dof_config:');
 
-
-for i=1:length(PC);
+for i=1:nJ;
     fprintf(fid,' - joint: %s\n',PC{i}.joint);
     topics=topic_map(PC{i}.joint);
     fprintf(fid,'   state_topic: %s\n',topics{1});
     fprintf(fid,'   command_topic: %s\n',topics{2});
+    fprintf(fid,'   tracking_tolerance: %d\n',t_tol);
     fprintf(fid,'   dmp:\n');
     
     for j=1:length(PC{i}.DMP)      
@@ -45,7 +49,7 @@ for i=1:length(PC);
          w=[]; q0_ref=[];
          for k=1:length(PC{i}.DMP{j}.param)
             w=[w PC{i}.DMP{j}.param{k}.w(3:end)'];
-            q0_ref=[q0_ref PC{i}.DMP{j}.param{k}.x0(1)];
+            q0_ref=[q0_ref PC{i}.DMP{j}.param{k}.q0_ref];
          end
          fprintf(fid,'     w: [');
          for k=1:length(w)-1

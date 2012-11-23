@@ -1,5 +1,5 @@
-function dx = dyn_sys(t,x,DMPi,T)
-%
+function [dx f] = dyn_sys(t,x,DMPi,T)
+%x=[s; q; dq]
 % define ode xdd=a*x+b*xd+f; td=T;
 
 
@@ -26,5 +26,10 @@ dx(3) = B*w;
 dx(1) = 1/T;
 
 dx = dx(:);
+
+if nargout==2
+    f=B*[0;0;w(3:end)];
+end
+
 
 %%%EOF

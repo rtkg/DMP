@@ -4,7 +4,7 @@ function w = find_weights_L2(d,p,nBF,ab)
 % the dynamics parameters a and b
 % single demonstration only!
 
-s=d(:,1);
+s=d(:,1); %assumes normalized time!
 x=d(:,2);
 dx=d(:,3);
 ddx=d(:,4);

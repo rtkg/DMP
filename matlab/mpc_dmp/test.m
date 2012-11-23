@@ -4,7 +4,9 @@ clear all;clc;cla; close all;
 % load DMPs computed with following parameters:
 % --------------------------------------------------------------------
 
-load DMP;
+load '../controllers/tripod_grasp.mat';
+DMP=tripod_grasp{7}.DMP{1};
+
 
 % --------------------------------------------------------------------
 % Parameters
@@ -25,6 +27,6 @@ options.mpc=1; %if one, use mpc controller, otherwise the cc coefficients are fo
               %considering the current projection according to the ICRA13 paper
 
 
-x0=[.5;0]; %initial position and velocity
+x0=[-.5;0]; %initial position and velocity
 [t,s,X,Lmbd]=simulateDMP(DMP,x0,options);
 h=plotSimulations(DMP,t,s,X,Lmbd,options);

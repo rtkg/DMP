@@ -1,9 +1,8 @@
-function DMP = computeDMPs(motion,param)
+function DMP = computeDMPs(motion,joint,param)
 % ACADO nonlinear least squares norm version with distance constraints on the gaussian
 %BF centers and fixed a & b
 
-
-demos=motion.demos;
+demos=motion.demos; %assumes that demo positions are shifted to 0!
 nBF=param.nBF;
 r_min=param.r_min;
 w_max=param.w_max;
@@ -35,6 +34,19 @@ end
 pS = nlsq_ACADO(demos,pI,A,b,Aeq,beq,lb,ub,S);
 p=S*pS;
 
+if (~isempty(find(isnan(p),1,'first')))
+    disp('Warning: solution vector contains NaN - setting weights to zero!');
+
+    p=zeros(size(p));
+    ab=pI(1:2);
+   for i=1:nD
+       p((2+nBF)*(i-1)+1:(2+nBF)*(i-1)+2)=ab; %set ab
+   end    
+
+   %set the nonlinear parameters to very small values 
+   p(end-2*nBF+1:end)=1e-6;
+end    
+
 pBF=p(1+nD*(2+nBF):nD*(2+nBF)+2*nBF);
 pBFI=pI(1+nD*(2+nBF):nD*(2+nBF)+2*nBF);
 cmap = hsv(nBF);
@@ -54,42 +66,68 @@ plot(0:1/nBF:1,ones(1+nBF,1),'r.','MarkerSize',20);
 DMP.id=motion.id;
 DMP.name=motion.name;
 
+euler_int=0;
 figure; 
 for i=1:length(demos)     
     t=demos{i}.D(:,1);
     w=p((2+nBF)*(i-1)+1:(2+nBF)*i);
-      
+    
     ind_e=length(t);
-    t=0:Td:t(end)*Tau;
+    t=0:Td:t(end)*Tau*1.5;
     x0=[0;demos{i}.D(1,2:3)'];
     
     DMP.param{i}.w=w;
     DMP.param{i}.pBF=pBF;
-    DMP.param{i}.x0=x0(2:3);
+    DMP.param{i}.q0_ref=x0(2);
     DMP.param{i}.D=demos{i}.D;
 
-    [T,X] = ode45(@dyn_sys,t,x0,[],DMP.param{i},Tau);
-       
-    ddx=diff(X(:,3))/Td; ddx(end+1)=ddx(end);   
-    
-    subplot(3,1,1);  hold on; grid on;
-    plot(T(end),0,'b.','MarkerSize',20);
-    plot(demos{i}.D(:,1),demos{i}.D(:,2),'r');
-    plot(T,X(:,2),'k--');
-    title('Position');
+    if (~euler_int)
+        [T,X] = ode45(@dyn_sys,t,x0,[],DMP.param{i},Tau);
+        ddx=diff(X(:,3))/Td; ddx(end+1)=ddx(end);   
+        
+        subplot(3,1,1);  hold on; grid on;
+        plot(T(end),0,'b.','MarkerSize',20);
+        plot(demos{i}.D(:,1),demos{i}.D(:,2),'r');
+        plot(T,X(:,2),'k--');
+        title(strcat(DMP.name,'-',joint,' Position'));
 
-    subplot(3,1,2);  hold on; grid on;
-    plot(T(end),0,'b.','MarkerSize',20);
-    plot(demos{i}.D(:,1),demos{i}.D(:,3),'r');
-    plot(T,X(:,3),'k--');
-    title('Velocity');
-    
-    subplot(3,1,3);  hold on; grid on;
-    plot(T(end),0,'b.','MarkerSize',20);
-    plot(demos{i}.D(:,1),demos{i}.D(:,4),'r');
-    plot(T,ddx,'k--');
-    title('Acceleration');
-    end   
+        subplot(3,1,2);  hold on; grid on;
+        plot(T(end),0,'b.','MarkerSize',20);
+        plot(demos{i}.D(:,1),demos{i}.D(:,3),'r');
+        plot(T,X(:,3),'k--');
+        title(strcat(DMP.name,'-',joint,' Velocity'));
+
+        subplot(3,1,3);  hold on; grid on;
+        plot(T(end),0,'b.','MarkerSize',20);
+        plot(demos{i}.D(:,1),demos{i}.D(:,4),'r');
+        plot(T,ddx,'k--');
+        title(strcat(DMP.name,'-',joint,' Acceleration'));
+    else
+        [T,X,f] = eulerIntegrator([t(1);t(end)],Td,x0,DMP.param{i},Tau);      
+        subplot(4,1,1);  hold on; grid on;
+        plot(T(end),0,'b.','MarkerSize',20);
+        plot(demos{i}.D(:,1),demos{i}.D(:,2),'r');
+        plot(T,X(:,2),'k--');
+        title(strcat(DMP.name,'-',joint,' Position'));
+
+        subplot(4,1,2);  hold on; grid on;
+        plot(T(end),0,'b.','MarkerSize',20);
+        plot(demos{i}.D(:,1),demos{i}.D(:,3),'r');
+        plot(T,X(:,3),'k--');
+        title(strcat(DMP.name,'-',joint,' Velocity'));
+
+        subplot(4,1,3);  hold on; grid on;
+        plot(T(end),0,'b.','MarkerSize',20);
+        plot(demos{i}.D(:,1),demos{i}.D(:,4),'r');
+        plot(T,X(:,4),'k--');
+        title(strcat(DMP.name,'-',joint,' Acceleration'));
+        
+        subplot(4,1,4);  hold on; grid on;
+        plot(T(end),0,'b.','MarkerSize',20);
+        plot(T,f,'b');
+        title(strcat(DMP.name,'-',joint,' Forcing term'));
+    end
+end   
 
 %%%EOF
 

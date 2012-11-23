@@ -4,6 +4,11 @@ data=traj.data;
 
 nJ=size(data,2)-1; %number of joints (first column is time)
 
+%convert from deg to rad
+if (options.units == 1)
+    data(:,2:end)=data(:,2:end)*pi/180;
+end    
+
 %demo time vector
 t_=data(:,1)*1e-9; t_=t_-t_(1);
 Td_=mean(diff(t_));
@@ -43,12 +48,18 @@ while true
     h2=plot(t_(cut_ind(2)),data(cut_ind(2),2:end),'r.','MarkerSize',20);
 end
 close;
-%cut data prepend/append one line to ensure velocity is zero at beginning and end
-data=data(cut_ind(1):cut_ind(2),:); data=[data(1,:); data; data(end,:)];
-t_=[t_(cut_ind(1))-Td_ t_(cut_ind(1):cut_ind(2)) t_(cut_ind(2))+Td_];   t_=t_-t_(1);
+%cut data prepend/append one line to ensure velocity is zero at beginning and end & normalize the
+%time vector
 
-%resampled time vector
-t=0:options.Td:t_(end);
+
+data=data(cut_ind(1):cut_ind(2),:); data=[data; repmat(data(end,:),options.app,1)];
+t_=t_(cut_ind(1):cut_ind(2)+options.app); t_=t_-t_(1); t_=t_/t_(end);
+
+% data=data(cut_ind(1):cut_ind(2),:); data=[data(1,:); data(1,:); data; data(end,:); data(end,:)];
+% t_=[t_(cut_ind(1))-2*Td_ t_(cut_ind(1))-Td_ t_(cut_ind(1):cut_ind(2)) t_(cut_ind(2))+Td_ ];   t_=t_-t_(1); t_=t_/t_(end);
+
+%resampled normalized time vector
+t=0:options.Td:1;
 t=t(:);
 
 for i=1:nJ
@@ -86,7 +97,8 @@ for i=1:nJ
         keyboard;
         close;
     end
-    demos{i}.D=[t, q,dq,ddq];
+    %shift to 0
+    demos{i}.D=[t, q-q(end),dq,ddq];
     demos{i}.raw=[t_', data(:,i+1)];
     demos{i}.file=file;
 end
