@@ -29,7 +29,7 @@ end
 h1=plot(t_(cut_ind(1)),data(cut_ind(1),2:end),'r.','MarkerSize',20);
 h2=plot(t_(cut_ind(2)),data(cut_ind(2),2:end),'r.','MarkerSize',20);
 title(file);
-xlabel('deg'); ylabel('t');
+xlabel('t'); ylabel('pos');
 
 while true
     t_o = input('Specify onset time (enter to continue): ');

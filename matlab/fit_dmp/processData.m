@@ -4,6 +4,7 @@ nM=length(raw_data); %number of motions
 
 %find joints: it is assumed that all files contain the same joints!!
 traj=importdata(raw_data{1}.file{1});
+
 remain=traj.textdata{1};
 count=1;
 while true

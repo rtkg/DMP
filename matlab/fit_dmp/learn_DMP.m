@@ -22,7 +22,18 @@ param.e=1e-5;
 dir = '../../demonstrations/';
 
 load(strcat(dir,'tripod.mat'));
-data=tripod;
+load(strcat(dir,'parallel_extension.mat'));
+load(strcat(dir,'palmar_pinch.mat'));
+load(strcat(dir,'open_hand.mat'));
+load(strcat(dir,'close_hand.mat'));
+load(strcat(dir,'large_diameter.mat'));
+load(strcat(dir,'small_diameter.mat'));
+load(strcat(dir,'power_sphere.mat'));
+load(strcat(dir,'precision_sphere.mat'));
+load(strcat(dir,'lateral.mat'));
+load(strcat(dir,'inferior_pincer.mat'));
+
+data=inferior_pincer;
 
 for i=1:length(data)
     PC{i}.joint=data{i}.joint;
@@ -31,5 +42,5 @@ for i=1:length(data)
     end
 end
 
-tripod_grasp=PC;
-save('../controllers/tripod_grasp','tripod_grasp');
+inferior_pincer_grasp=PC;
+save('../controllers/inferior_pincer_grasp','inferior_pincer_grasp');
