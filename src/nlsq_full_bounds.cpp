@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <math.h>
 
-#define DATA_PATH "/home/rkg/Data/Coding/dynamical_systems/data/"
+#define DATA_PATH "/home/rkg/Data/Coding/DMP/data/"
 //---------------------------------------------------------------------
 std::vector<std::vector<int> > getDemoInd(std::deque<std::string> const & args)
 {
