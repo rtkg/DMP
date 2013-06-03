@@ -8,6 +8,9 @@ D=size(Pk,2);
 xk1=zeros(2+2*D,1);
 
 xk1(1:2)=A_*xk(1:2)+Pk*lmbd;
+
+
+
 for d=1:D
    ind=2+2*d-1:2*d+2;
    xk1(ind)=A_*xk(ind)+Pk(:,d);
