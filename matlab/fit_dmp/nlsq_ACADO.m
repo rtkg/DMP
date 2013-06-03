@@ -2,7 +2,7 @@ function p = nlsq_ACADO(d,pI,A,b,Aeq,beq,lb,ub,S)
 %writes the necessary files for communicating with ACADO, runs the ACADO binary and reads the result
 
 % -----------------
-path = '~/Data/Coding/dynamical_systems/';
+path = '~/Data/Coding/DMP/';
 % -----------------
 
 nD=length(d);

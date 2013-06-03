@@ -51,10 +51,13 @@ for i=1:nJ;
             w=[w PC{i}.DMP{j}.param{k}.w(3:end)'];
             q0_ref=[q0_ref PC{i}.DMP{j}.param{k}.q0_ref];
          end
+      
          fprintf(fid,'     w: [');
          for k=1:length(w)-1
             fprintf(fid,'%f,',w(k)); 
          end    
+   
+
          fprintf(fid,'%f',w(k+1)); 
          fprintf(fid,']\n');         
          
@@ -65,7 +68,12 @@ for i=1:nJ;
          fprintf(fid,'     q0_ref: [');
          for k=1:length(q0_ref)-1
             fprintf(fid,'%f,',q0_ref(k)); 
-         end    
+         end   
+         
+         if isempty(k)
+             k=0;
+         end
+         
          fprintf(fid,'%f',q0_ref(k+1)); 
          fprintf(fid,']\n');
 
