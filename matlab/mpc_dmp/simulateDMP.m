@@ -75,7 +75,7 @@ for i=1:Tau/Td;
     
   %Update the states for one step
   X(i+1,:)=updateStates(DMP.A_,Lmbd(i,:),P{1},X(i,:));
-
+  
   %Update preview window, phase variable and time
   t(end+1)=t(end)+Td;
   [s(end+1) P{end+1}]=integrateStep(DMP,s(end),t(end-1:end),options);
