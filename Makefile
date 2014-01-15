@@ -7,7 +7,7 @@ SDIR = src
 
 ####### Define ACADO related variables
 
-LOCAL_PATH_PREFIX = /home/rkg/Data/Programs/ACADOtoolkit-1.0.2613beta
+LOCAL_PATH_PREFIX = /home/rkg/ros/acado
 include ${LOCAL_PATH_PREFIX}/include/acado/include.mk
 
 ####### Compiler, tools and options

@@ -32,8 +32,9 @@ load(strcat(dir,'power_sphere.mat'));
 load(strcat(dir,'precision_sphere.mat'));
 load(strcat(dir,'lateral.mat'));
 load(strcat(dir,'inferior_pincer.mat'));
+load(strcat(dir,'minjerk.mat'));
 
-data=inferior_pincer;
+data=minjerk;
 
 for i=1:length(data)
     PC{i}.joint=data{i}.joint;
@@ -42,5 +43,5 @@ for i=1:length(data)
     end
 end
 
-inferior_pincer_grasp=PC;
-save('../controllers/inferior_pincer_grasp','inferior_pincer_grasp');
+minjerk_traj=PC;
+save('../controllers/minjerk_traj','minjerk_traj');
