@@ -28,7 +28,6 @@ obj/
 *.dll
 *.lib
 *.exe
-*.dat
 *.bag
 *.o
 *.md5sum

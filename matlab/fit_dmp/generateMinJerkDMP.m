@@ -18,7 +18,7 @@ for i=1:N
    minjerk{2}.motion{1}.demos{i}.D=[t' X'];
 end
 
-save('../../demonstrations/minjerk','minjerk');
+%save('../../demonstrations/minjerk','minjerk');
 
 %%%EOF
 

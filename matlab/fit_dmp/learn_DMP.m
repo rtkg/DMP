@@ -44,4 +44,4 @@ for i=1:length(data)
 end
 
 minjerk_traj=PC;
-save('../controllers/minjerk_traj','minjerk_traj');
+%save('../controllers/minjerk_traj','minjerk_traj');
