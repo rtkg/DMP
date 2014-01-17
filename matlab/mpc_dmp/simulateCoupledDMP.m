@@ -12,7 +12,6 @@ Tau=options.Tau;
 Td=options.Td;
 L=length(DOFs);
 
-
 %%%%%%%%%%%%%%%%%%DISCRETE COUMPUND STATE TRANSITION MATRICEX Phi (Ph) & Beta (Bt) %%%%%%%%%
 
 Ph=[];
@@ -28,9 +27,6 @@ for i=1:L
     
     Ph=blkdiag(Ph,DOFs{i}.A_);
     Bt=blkdiag(Bt,DOFs{i}.B_);
-
-    
-    
 end 
 %%%%%%%%%%%%%%%%%% INITIAL STATES %%%%%%%%%
 W{1}.z=[]; W{1}.D=[];
@@ -40,13 +36,10 @@ for i=1:L
     for j=1:length(DOFs{i}.param)
         Xd0=[Xd0 [DOFs{i}.param{j}.q0_ref ;0]];
     end
-
     W{1}.D= [W{1}.D;Xd0]; 
-
 end
 W{1}.s=0;
 W{1}.t=0;
-
 
 %make sure to integrate at least 1 step forward, even if the preview window size = 0
 if ws==0
@@ -60,61 +53,17 @@ nDv=nD*L*(ws+1); %number of decision variables
 for k=1:ceil(Tau/Td)+1
     W=forwardIntegration(W{1},nS,DOFs,options); %integrate the window forward in time
 
-    %%%%%%%%%%%%%%%%%% FORMULATE THE OPTIMIZATION MATRICES %%%%%%%%%
-    ph=[];
-    Xi=zeros(2*L*(ws+1),nD*L*(ws+1));
-    for i=1:ws+1
-        c_ind=(i-1)*nD*L+1:i*nD*L; %column indices
+    %%%%%%%%%%%%%%%%%% FORMULATE AND SOLVE THE OPTIMIZATION PROBLEM %%%%%%%%%
+    
+    [H,f,Aeq,lb,ub,lbAeq,ubAeq]=optimizationProblem(W,Ph,Bt,options);
 
-        ph=[ph; Ph^(i-1)];
-        %Put -Om[k+i=1] in the Diagonal of Xi
-        Om=[];
-        for l=1:L
-            Om=blkdiag(Om,W{i}.D(2*l-1:2*l,:));    
-        end    
-        Xi((i-1)*2*L+1:i*2*L,c_ind)=(-1)*Om;
-
-        for j=i:ws
-            r_ind=j*2*L+1:(j+1)*2*L;  %row indices
-
-            Kp=[];
-            for l=1:L
-                Kp=blkdiag(Kp,W{i}.U(l,:));
-            end     
-            Xi(r_ind,c_ind)=Ph^(j-i)*Bt*Kp;
-        end
-    end
-    ph=ph*W{1}.z; %phi=[Phi^0, ..., Phi^ws]^T*zeta[k]
-
-    %compute distances between current state and demo states
-    v=zeros(nDv,1);
-    for i=1:L
-        v((i-1)*nD+1:i*nD)=sum((repmat(W{1}.z(2*i-1:2*i),1,nD)-W{1}.D(2*i-1:2*i,:)).^2);
-    end  
-
-    %Prioritizing matrix
-    P=diag(repmat(diag(options.P),L*(ws+1),1));
-
-    %Hessian
-    H=Xi'*P*Xi; H=(H+H')/2;
-
-    %linear part of the objective
-    f=(ph'*P*Xi)'+options.epsilon*v;
-
-    %Bounds
-    lb=zeros(nD*L*(ws+1),1); ub=[];
-
-    %Equality constraints
-    Aeq=kron(eye(L*(ws+1)),ones(1,nD)); beq=ones(L*(ws+1),1);
-
-
-    %%%%%%%% SOLVE THE OPTIMIZATION PROBLEM%%%%%%%%
     if k==1
-        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,Aeq,lb,ub,beq,beq);
+        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,Aeq,lb,ub,lbAeq,ubAeq);
     else
-        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,Aeq,lb,ub,beq,beq,Mu); %start QP from previous
-                                                                          %Solution if applicable
+        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,Aeq,lb,ub,lbAeq,ubAeq,Mu); %start QP from previous
+                                                                              %Solution if applicable
     end
+
     %%%%%%%% COMPUTE THE PREDICTED STATES%%%%%%%%
 
     for i=1:ws

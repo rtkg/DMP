@@ -53,7 +53,6 @@ while ~complete
         if isempty(ind), complete=1; break; end
     end
 
-
 %plot the encoded demonstrated states
 subplot(1,3,1);
 for i=1:size(D,2)
