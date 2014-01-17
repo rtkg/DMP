@@ -53,15 +53,6 @@ while ~complete
         if isempty(ind), complete=1; break; end
     end
 
-%plot the Controller states    
-subplot(1,3,1);
-plot(t,Q,'k'); 
-
-subplot(1,3,2);
-plot(t,dQ,'k'); 
-
-subplot(1,3,3);
-plot(Q,dQ,'k'); 
 
 %plot the encoded demonstrated states
 subplot(1,3,1);
@@ -76,6 +67,14 @@ subplot(1,3,3);
 for i=1:size(D,2)
 plot(D(:,i),dD(:,i),'Color',[1 .6 .6],'LineWidth',2);
 end
+
+%plot the Controller states    
+subplot(1,3,1);
+plot(t,Q,'k'); 
+subplot(1,3,2);
+plot(t,dQ,'k'); 
+subplot(1,3,3);
+plot(Q,dQ,'k'); 
 
 %plot the predicted controller states
 subplot(1,3,1);
