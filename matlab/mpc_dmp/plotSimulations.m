@@ -11,7 +11,8 @@ elseif isempty(plot_step)
 end
 
 %set plot properties
-h=figure; figure(h); scrsz = get(0,'ScreenSize'); set(h,'position',scrsz*0.76);
+h1=figure; h=figure; figure(h); scrsz = get(0,'ScreenSize'); set(h,'position',scrsz*0.76);
+
 subplot(1,3,1);
 title('Position vs. time');
 xlabel('t');ylabel('q');
@@ -31,7 +32,7 @@ grid on; hold on;
 
 ind=1:length(S); %index list
 complete=0;
-    t=[]; Q=[]; dQ=[]; D=[]; dD=[];
+    t=[]; Q=[]; dQ=[]; D=[]; dD=[]; ldo=[];
 while ~complete
 
     for i=1:plot_step
@@ -40,6 +41,9 @@ while ~complete
         t=[t;tk];
         Q=[Q; Qk]; dQ=[dQ; dQk];
         D=[D; Dk]; dD=[dD; dDk];
+
+        ldo=[ldo [S{ind(1)}{1}.mu(size(D,2)+1); S{ind(1)}{1}.mu(end)]]; %HAAAACKKKKK
+       
         
         %Extract the currently predicted states             
         pt=[]; pQ=[]; pdQ=[];
@@ -52,7 +56,7 @@ while ~complete
         ind(1)=[]; %pop index list   
         if isempty(ind), complete=1; break; end
     end
-
+figure(h);
 %plot the encoded demonstrated states
 subplot(1,3,1);
 for i=1:size(D,2)
@@ -83,6 +87,10 @@ plot(pt,pdQ,'ro','MarkerSize',3,'MarkerFaceColor','r');
 subplot(1,3,3);
 plot(pQ,pdQ,'ro','MarkerSize',3,'MarkerFaceColor','r'); 
     
+figure(h1);
+plot(t,ldo(1,:),'b'); hold on; grid on;
+plot(t,ldo(2,:),'r');
+
 %if ~complete, keyboard; end
 
 %clear all but the last states to guarantee overlap for plotting in the next step

@@ -70,13 +70,13 @@ for k=1:ceil(Tau/Td)+1
     %%%%%%%% COMPUTE THE PREDICTED STATES%%%%%%%%
 
     for i=1:nS
-        mu=Mu((i-1)*nD*L+1:i*nD*L); 
+        mu=Mu((i-1)*(nD+1)*L+1:i*(nD+1)*L); 
         W{i}.mu=mu;
         W{i+1}.t=W{i}.t+Td; %increase the time
         W{i+1}.k=k+1;
         Kp=[];
         for l=1:L
-            Kp=blkdiag(Kp,W{i}.U(l,:));
+            Kp=blkdiag(Kp,[W{i}.U(l,:) 1]);
         end     
         W{i+1}.z=Ph*W{i}.z+Bt*Kp*mu;
     end    
