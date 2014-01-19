@@ -40,6 +40,7 @@ for i=1:L
 end
 W{1}.s=0;
 W{1}.t=0;
+W{1}.k=1;
 
 %make sure to integrate at least 1 step forward, even if the preview window size = 0
 if ws==0
@@ -55,28 +56,31 @@ for k=1:ceil(Tau/Td)+1
 
     %%%%%%%%%%%%%%%%%% FORMULATE AND SOLVE THE OPTIMIZATION PROBLEM %%%%%%%%%
     
-    [H,f,Aeq,lb,ub,lbAeq,ubAeq]=optimizationProblem(W,Ph,Bt,options);
+    [H,f,A_Aeq,lb,ub,lbA,ubA]=optimizationProblem(W,Ph,Bt,options);
 
     if k==1
-        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,Aeq,lb,ub,lbAeq,ubAeq);
+        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,A_Aeq,lb,ub,lbA,ubA);
     else
-        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,Aeq,lb,ub,lbAeq,ubAeq,Mu); %start QP from previous
+        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,A_Aeq,lb,ub,lbA,ubA,Mu); %start QP from previous
                                                                               %Solution if applicable
     end
-
+    if exitflag ~= 0
+        keyboard
+    end    
     %%%%%%%% COMPUTE THE PREDICTED STATES%%%%%%%%
 
-    for i=1:ws
+    for i=1:nS
         mu=Mu((i-1)*nD*L+1:i*nD*L); 
         W{i}.mu=mu;
         W{i+1}.t=W{i}.t+Td; %increase the time
+        W{i+1}.k=k+1;
         Kp=[];
         for l=1:L
             Kp=blkdiag(Kp,W{i}.U(l,:));
         end     
         W{i+1}.z=Ph*W{i}.z+Bt*Kp*mu;
     end    
-    
+
     S{k}=W; %save all the states and computed values for the current step k
     W{1}=W{2};%iterate the window for the next step
     

@@ -64,7 +64,7 @@ while ~complete
         subplot(1,2,2);
         plot(dD{1}(:,c{1}(i)),dD{2}(:,c{2}(i)),'Color',[1 .6 .6],'LineWidth',2);
     end
-   
+    
     %plot the Controller states    
     subplot(1,2,1);
     plot(Q{1},Q{2},'k'); 
@@ -77,6 +77,42 @@ while ~complete
     subplot(1,2,2);
     plot(pdQ{1},pdQ{2},'ro','MarkerSize',3,'MarkerFaceColor','r'); 
 
+    %plot constraints
+    for j=1:length(options.Constraints)
+        
+        %check if the constraint is active
+        %if .....
+        %else
+        %  continue;
+        %end
+        
+        N=options.Constraints{j}.N;
+        b=options.Constraints{j}.b;
+        
+        %find 2 points outside the bounding box
+        L=zeros(2,2);
+        if abs(N(2))>0.01
+            L(1,1)=max([options.Qplot_window_size(2) options.dQplot_window_size(2)]);
+            L(1,2)=min([options.Qplot_window_size(1) options.dQplot_window_size(1)]);
+            L(2,1:2)=(repmat(-b,1,2)-N(1)*L(1,1:2))/N(2);
+        else    
+            L(2,1)=max([options.Qplot_window_size(2) options.dQplot_window_size(2)]);
+            L(2,2)=min([options.Qplot_window_size(1) options.dQplot_window_size(1)]);
+            L(1,1:2)=(repmat(-b,1,2)-N(2)*L(1,1:2))/N(1);
+        end
+
+        if options.Constraints{j}.type=='p'
+            subplot(1,2,1);
+        elseif options.Constraints{j}.type=='v'
+            subplot(1,2,2);
+        else
+            error('Unknown constraint type!');
+        end
+
+        plot(L(1,:),L(2,:),'b','LineWidth',2);
+
+    end
+    
     
     if ~complete, keyboard; end
 
