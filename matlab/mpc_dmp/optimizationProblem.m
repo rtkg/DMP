@@ -60,8 +60,8 @@ A=kron(eye(L*(ws+1)),[ones(1,nD) 0]); lbA=-ones(L*(ws+1),1);
 nE=L*(ws+1);
 
 %%Keep the auxiliary control inputs to zero
-%A=[kron(eye(L*(ws+1)),[zeros(1,nD) 1]); A]; lbA=[ zeros(L*(ws+1),1); lbA];
-%nE=nE+L*(ws+1);
+% A=[kron(eye(L*(ws+1)),[zeros(1,nD) 1]); A]; lbA=[ zeros(L*(ws+1),1); lbA];
+% nE=nE+L*(ws+1);
 %%%%%%%% ADDITIONAL CONSTRAINTS FOR OBSTACLE AVOIDANCE %%%%%%%%
 
 for i=1:length(options.Constraints)

@@ -26,7 +26,7 @@ options.Td=.01; %sample time
 options.Ps=diag([1; 1]); %state prioization matrix in the QP
 options.Po=1000; %auxiliary control input penalty in the QP
 options.epsilon=0.000001; %weighting coefficient for the penalty term in the QP
-options.ws=5; %mpc preview window size
+options.ws=15; %mpc preview window size
 options.plot_step=[]; %plot step size
 options.Qplot_window_size=[-1.5 1.5];
 options.dQplot_window_size=[-2 2];
@@ -36,10 +36,7 @@ options.Constraints{1}.b=.2;
 options.Constraints{1}.active=[20:40]; 
 options.Constraints{1}.type='p'; 
 
-
-tic
 S=simulateCoupledDMP(DOFs,options);
-toc 
 ind_DMP=1;
 
 h1=plotSimulations(S,ind_DMP,options);
