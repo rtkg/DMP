@@ -55,18 +55,11 @@ for k=1:ceil(Tau/Td)+1
     W=forwardIntegration(W{1},nS,DOFs,options); %integrate the window forward in time
 
     %%%%%%%%%%%%%%%%%% FORMULATE AND SOLVE THE OPTIMIZATION PROBLEM %%%%%%%%%
-    qpO_options=qpOASES_options;
-    qpO_options.maxIter=1000;
-     enableRegularisation=1;
-    [H,f,A_Aeq,lb,ub,lbA,ubA]=optimizationProblem(W,Ph,Bt,options);
-
-    if k==1
-        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,A_Aeq,lb,ub,lbA,ubA,[],qpO_options);
-    else
-        [Mu,fval,exitflag,iter,lmbd] = qpOASES(H,f,A_Aeq,lb,ub,lbA,ubA,Mu,qpO_options); %start QP from previous
-                                                                              %Solution if applicable
-    end
+    [H,f,A_Aeq,lb,ub,lbA,nE]=optimizationProblem(W,Ph,Bt,options);  
+    [Mu,lmbd,exitflag] =qld(H, A_Aeq, f, lbA,lb, ub, nE,1);
+    
     if exitflag ~= 0
+warning('QP was not solved succesfully!');
         %    keyboard
     end    
     %%%%%%%% COMPUTE THE PREDICTED STATES%%%%%%%%

@@ -1,4 +1,4 @@
-function [H,f,A,lb,ub,lbA,ubA]=optimizationProblem(W,Ph,Bt,options)
+function [H,f,A,lb,ub,lbA,nE]=optimizationProblem(W,Ph,Bt,options)
 
 %%%%%%%% GENERAL FORMULATION %%%%%%%%
 
@@ -56,11 +56,12 @@ minb=-1e6; maxb=1e6;
 lb=repmat([zeros(nD,1); minb],L*(ws+1),1); ub=maxb*ones((nD+1)*L*(ws+1),1); 
 
 %Equality constraints
-A=kron(eye(L*(ws+1)),[ones(1,nD) 0]); lbA=ones(L*(ws+1),1); ubA=lbA;
+A=kron(eye(L*(ws+1)),[ones(1,nD) 0]); lbA=-ones(L*(ws+1),1); 
+nE=L*(ws+1);
 
 %%Keep the auxiliary control inputs to zero
-%A=[A;kron(eye(L*(ws+1)),[zeros(1,nD) 1])]; lbA=[lbA; zeros(L*(ws+1),1)]; ubA=[ubA; zeros(L*(ws+1),1)];
-
+%A=[kron(eye(L*(ws+1)),[zeros(1,nD) 1]); A]; lbA=[ zeros(L*(ws+1),1); lbA];
+%nE=nE+L*(ws+1);
 %%%%%%%% ADDITIONAL CONSTRAINTS FOR OBSTACLE AVOIDANCE %%%%%%%%
 
 for i=1:length(options.Constraints)
@@ -101,7 +102,6 @@ for i=1:length(options.Constraints)
         NS=kron(eye(ws),N*S);
 
         %Augment the constraint matrices
-        ubA=[ubA; -b*ones(ws,1)-NS*dlt];
-        lbA=[lbA; -1e6*ones(ws,1)];
-        A=[A; NS*Y];
+        lbA=[lbA; -b*ones(ws,1)-NS*dlt];
+        A=[A; -NS*Y];
 end    
