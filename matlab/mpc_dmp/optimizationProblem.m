@@ -58,47 +58,50 @@ lb=repmat([zeros(nD,1); minb],L*(ws+1),1); ub=maxb*ones((nD+1)*L*(ws+1),1);
 %Equality constraints
 A=kron(eye(L*(ws+1)),[ones(1,nD) 0]); lbA=ones(L*(ws+1),1); ubA=lbA;
 
+%%Keep the auxiliary control inputs to zero
+%A=[A;kron(eye(L*(ws+1)),[zeros(1,nD) 1])]; lbA=[lbA; zeros(L*(ws+1),1)]; ubA=[ubA; zeros(L*(ws+1),1)];
+
 %%%%%%%% ADDITIONAL CONSTRAINTS FOR OBSTACLE AVOIDANCE %%%%%%%%
 
-% for i=1:length(options.Constraints)
-%     if ws < 1
-%        warning('preview window size has to be at least 1 to perform obstacle avoidance');
-%        break;
-%     end     
+for i=1:length(options.Constraints)
+    if ws < 1
+       warning('preview window size has to be at least 1 to perform obstacle avoidance');
+       break;
+    end     
     
-%         %check if the constraint is active
-%         %if .....
-%         %else
-%         %  continue;
-%         %end
+        %check if the constraint is active
+        %if .....
+        %else
+        %  continue;
+        %end
     
     
-%         N=options.Constraints{i}.N;
-%         b=options.Constraints{i}.b;
-%     %Form an appropriate selection matrix depending on the constraint type
-%     S=zeros(L,2*L);
-%         if options.Constraints{i}.type=='p'
-%           for l=1:L
-%               S(l,2*l-1)=1;
-%            end   
-%         elseif options.Constraints{i}.type=='v'
-%           for l=1:L
-%               S(l,2*l)=1;
-%            end  
-%         else
-%             error('Unknown constraint type!');
-%         end
+        N=options.Constraints{i}.N;
+        b=options.Constraints{i}.b;
+    %Form an appropriate selection matrix depending on the constraint type
+    S=zeros(L,2*L);
+        if options.Constraints{i}.type=='p'
+          for l=1:L
+              S(l,2*l-1)=1;
+           end   
+        elseif options.Constraints{i}.type=='v'
+          for l=1:L
+              S(l,2*l)=1;
+           end  
+        else
+            error('Unknown constraint type!');
+        end
 
-%         dlt=ph(2*L+1:end);
+        dlt=ph(2*L+1:end);
             
-%         Y=zeros(2*L*ws,nD*L*(ws+1));
-%         for j=1:ws
-%            Y((j-1)*2*L+1:2*L*ws,(j-1)*nD*L+1:j*nD*L)=Xi(j*2*L+1:2*L*(ws+1),(j-1)*nD*L+1:j*nD*L);  
-%         end    
-%         NS=kron(eye(ws),N*S);
+        Y=zeros(2*L*ws,(nD+1)*L*(ws+1));
+        for j=1:ws
+           Y((j-1)*2*L+1:2*L*ws,(j-1)*(nD+1)*L+1:j*(nD+1)*L)=Xi(j*2*L+1:2*L*(ws+1),(j-1)*(nD+1)*L+1:j*(nD+1)*L);  
+        end    
+        NS=kron(eye(ws),N*S);
 
-%         %Augment the constraint matrices
-%         ubA=[ubA; -b*ones(ws,1)-NS*dlt];
-%         lbA=[lbA; -1e6*ones(ws,1)];
-%         A=[A; NS*Y];
-% end    
+        %Augment the constraint matrices
+        ubA=[ubA; -b*ones(ws,1)-NS*dlt];
+        lbA=[lbA; -1e6*ones(ws,1)];
+        A=[A; NS*Y];
+end    

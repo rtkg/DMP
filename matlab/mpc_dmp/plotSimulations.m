@@ -43,7 +43,6 @@ while ~complete
         D=[D; Dk]; dD=[dD; dDk];
 
         ldo=[ldo [S{ind(1)}{1}.mu(size(D,2)+1); S{ind(1)}{1}.mu(end)]]; %HAAAACKKKKK
-       
         
         %Extract the currently predicted states             
         pt=[]; pQ=[]; pdQ=[];
@@ -88,6 +87,7 @@ subplot(1,3,3);
 plot(pQ,pdQ,'ro','MarkerSize',3,'MarkerFaceColor','r'); 
     
 figure(h1);
+
 plot(t,ldo(1,:),'b'); hold on; grid on;
 plot(t,ldo(2,:),'r');
 
@@ -95,7 +95,7 @@ plot(t,ldo(2,:),'r');
 
 %clear all but the last states to guarantee overlap for plotting in the next step
         t(1:end-1)=[]; Q(1:end-1)=[]; dQ(1:end-1)=[];
-        D(1:end-1,:)=[]; dD(1:end-1,:)=[];
+        D(1:end-1,:)=[]; dD(1:end-1,:)=[]; ldo(:,1:end-1)=[];
 end
 
 
