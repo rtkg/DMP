@@ -44,7 +44,7 @@ Ps=diag(repmat(diag(options.Ps),L*(ws+1),1));
 
 %Penalty matrix for the auxiliary control inputs
 Po=kron(eye(L*(ws+1)),diag([zeros(nD,1); options.Po]));
-
+Po=zeros(size(Po));
 %Hessian
 H=Xi'*Ps*Xi+Po; H=(H+H')/2;
 
