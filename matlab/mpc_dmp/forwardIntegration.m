@@ -6,7 +6,8 @@ nDofs=length(DOFs);
 
 for k=1:nS
     W{k}.U=[];W{k+1}.D=[];
-
+    W{k+1}.k=W{k}.k+1;
+    W{k+1}.t=W{k}.t+Td;
     for i=1:nDofs    
         Ui=[]; 
         for j=1:length(DOFs{i}.param)

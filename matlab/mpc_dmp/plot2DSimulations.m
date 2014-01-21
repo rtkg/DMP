@@ -37,14 +37,17 @@ complete=0;
 for l=1:L
     t{l}=[]; Q{l}=[]; dQ{l}=[]; D{l}=[]; dD{l}=[];
 end    
-h_pQ1pQ2=[];  h_pdQ1pdQ2=[]; ldo=[];
+h_pQ1pQ2=[];  h_pdQ1pdQ2=[]; h_L1L2p=[]; h_L1L2v=[]; ldo=[];
 
+k_ind=[1:length(S) length(S)+1:length(S)+options.ws];
 while ~complete
-    for i=1:plot_step
-        %clean up
-        subplot(1,3,1); delete(h_pQ1pQ2);  h_pQ1pQ2=[];
-        subplot(1,3,2); delete(h_pdQ1pdQ2); h_pdQ1pdQ2=[];
-        
+    %clear up
+    subplot(1,3,1); delete(h_pQ1pQ2);  h_pQ1pQ2=[];
+    subplot(1,3,2); delete(h_pdQ1pdQ2); h_pdQ1pdQ2=[];
+    subplot(1,3,1); delete(h_L1L2p); h_L1L2p=[]; 
+    subplot(1,3,2); delete(h_L1L2v); h_L1L2v=[]; 
+
+    for i=1:plot_step 
         %extract the auxiliary control inputs at time k
         ldo=[ldo [S{ind(1)}{1}.mu(size(D,2)+1); S{ind(1)}{1}.mu(end)]]; %HAAACKKK! works only for
                                                                         %L==2!!!! (should do it
@@ -67,9 +70,11 @@ while ~complete
                 pQ{l}=[pQ{l}; pQk]; pdQ{l}=[pdQ{l}; pdQk];
             end
         end  
+        k_ind=[S{ind(1)}{1}.k:S{ind(1)}{end}.k]; %active indices for plotting
         ind(1)=[]; %pop index list   
         if isempty(ind), complete=1; break; end
     end
+
     
     %plot the encoded demonstrated states
     N=size(D{1},2);
@@ -96,9 +101,20 @@ while ~complete
 
     %plot constraints
     for j=1:length(options.Constraints)
-        % keyboard
+
         % options.Constraints{j}.active
         %check if the constraint is active
+
+        if isempty(intersect(options.Constraints{j}.active,k_ind))
+            continue;
+        end
+        % elseif length(intersect(options.Constraints{j}.active,k_ind)) < length(k_ind)
+        %     clr=[0.792 0.883 1];
+        % else 
+        %     clr=[0 0 1];
+        % end
+
+
         %if .....
         %else
         %  continue;
@@ -121,19 +137,18 @@ while ~complete
 
         if options.Constraints{j}.type=='p'
             subplot(1,3,1);
+            h_L1L2p=plot(L(1,:),L(2,:),'b','LineWidth',2);
         elseif options.Constraints{j}.type=='v'
             subplot(1,3,2);
+            h_L1L2v=plot(L(1,:),L(2,:),'b','LineWidth',2);
         else
             error('Unknown constraint type!');
         end
-
-        plot(L(1,:),L(2,:),'b','LineWidth',2);
-
     end
 
- subplot(1,3,3);
- plot(t{1},ldo(1,:),'b'); hold on; grid on;
- plot(t{1},ldo(2,:),'r');
+    subplot(1,3,3);
+    plot(t{1},ldo(1,:),'b'); hold on; grid on;
+    plot(t{1},ldo(2,:),'r');
     
     drawnow;
     %   if ~complete, keyboard; end

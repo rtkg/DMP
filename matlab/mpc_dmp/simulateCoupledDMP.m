@@ -3,13 +3,14 @@ function S=simulateCoupledDMP(DOFs,options)
 if options.ws < 0
     error('Preview window size has to be larger than 0!');
 end
-if options.ws > options.Tau/options.Td
-    error('Preview window has to be smaller than Tau/Td');    
+if options.ws > options.T/options.Td
+    error('Preview window has to be smaller than T/Td');    
 end
 
 ws=options.ws;
 Tau=options.Tau;
 Td=options.Td;
+T=options.T;
 L=length(DOFs);
 
 %%%%%%%%%%%%%%%%%%DISCRETE COUMPUND STATE TRANSITION MATRICEX Phi (Ph) & Beta (Bt) %%%%%%%%%
@@ -24,7 +25,7 @@ for i=1:L
     %discrete state matrix & control vector   
     DOFs{i}.A_=expm(A*Td);
     DOFs{i}.B_=inv(A)*(DOFs{i}.A_-eye(2))*B;
-    
+
     Ph=blkdiag(Ph,DOFs{i}.A_);
     Bt=blkdiag(Bt,DOFs{i}.B_);
 end 
@@ -51,7 +52,7 @@ end
 
 nD=size(W{1}.D,2); %number of Demos (assuming it's the same for each DMP)
 nDv=nD*L*(ws+1); %number of decision variables 
-for k=1:ceil(Tau/Td)+1
+for k=1:ceil(T/Td)+1
     W=forwardIntegration(W{1},nS,DOFs,options); %integrate the window forward in time
 
     %%%%%%%%%%%%%%%%%% FORMULATE AND SOLVE THE OPTIMIZATION PROBLEM %%%%%%%%%
@@ -59,7 +60,7 @@ for k=1:ceil(Tau/Td)+1
     [Mu,lmbd,exitflag] =qld(H, A_Aeq, f, lbA,lb, ub, nE,1);
     
     if exitflag ~= 0
-warning('QP was not solved succesfully!');
+        warning('QP was not solved succesfully!');
         %    keyboard
     end    
     %%%%%%%% COMPUTE THE PREDICTED STATES%%%%%%%%
@@ -67,8 +68,6 @@ warning('QP was not solved succesfully!');
     for i=1:nS
         mu=Mu((i-1)*(nD+1)*L+1:i*(nD+1)*L); 
         W{i}.mu=mu;
-        W{i+1}.t=W{i}.t+Td; %increase the time
-        W{i+1}.k=k+1;
         Kp=[];
         for l=1:L
             Kp=blkdiag(Kp,[W{i}.U(l,:) 1]);
