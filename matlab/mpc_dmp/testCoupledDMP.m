@@ -41,5 +41,5 @@ options.Obstacles{1}.O=createObstacle(Obst);
 S=simulateCoupledDMP(DOFs,options);
 
 ind_DMP=2;
-%h1=plotSimulations(S,ind_DMP,options);
-h2=plot2DSimulations(S,options);
+h1=plotSimulations(S,ind_DMP,options);
+%h2=plot2DSimulations(S,options);

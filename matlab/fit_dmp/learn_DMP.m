@@ -12,6 +12,7 @@ param.Tau=1;
 param.norm=1; %use L2 norm
 param.Td=1e-2;
 param.e=1e-5; 
+param.kernel='fixed'; % 'fixed' or 'optimized'
 %a=-log(e)^2 
 %b=-sqrt(4*log(e)^2))
 
@@ -34,7 +35,7 @@ load(strcat(dir,'lateral.mat'));
 load(strcat(dir,'inferior_pincer.mat'));
 load(strcat(dir,'minjerk.mat'));
 
-data=minjerk;
+data=tripod;
 
 for i=1:length(data)
     PC{i}.joint=data{i}.joint;

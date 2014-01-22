@@ -75,7 +75,6 @@ for k=1:ceil(T/Td)+1
         end     
         W{i+1}.z=Ph*W{i}.z+Bt*Kp*mu;
     end    
-    
 
     if k==1
         aC=obstacleAvoidance({W{1:ws+1}},options);%fill the active constraint window in the first step
