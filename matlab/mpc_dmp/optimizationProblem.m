@@ -88,7 +88,7 @@ for i=1:length(options.Obstacles)
     for j=1:ws
         HSp=blkdiag(HSp,Ocon{i}.Ha(j,:)*Sp);
     end
-    
+    keyboard
     lbA=[lbA; -HSp*dlt-Ocon{i}.ba];
     A=[A; -HSp*Y];
 end    
