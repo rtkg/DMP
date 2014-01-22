@@ -166,7 +166,7 @@ int main(int argc, char **argv)
   algorithm.set( KKT_TOLERANCE, KKT_tol);
   algorithm.set( ABSOLUTE_TOLERANCE, 1e-4);
   algorithm.set( PRINTLEVEL,HIGH);
-  algorithm.set( MAX_NUM_ITERATIONS, 50000 );
+  algorithm.set( MAX_NUM_ITERATIONS, 4000 );
   algorithm.set (PRINT_COPYRIGHT, NO);
   // algorithm.set (PRINT_SCP_METHOD_PROFILE, YES);
   algorithm.set( HESSIAN_APPROXIMATION, BLOCK_BFGS_UPDATE); 
