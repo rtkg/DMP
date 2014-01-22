@@ -37,12 +37,9 @@ Obst.r0=[-0.5;-0.5];
 Obst.r=.3;
 Obst.nP=10;
 options.Obstacles{1}.O=createObstacle(Obst);
-%options.Obstacles{1}.cheb=options.Obstacles{1}.O.chebyCenter().x; %compute chebychev center for transformation
 
 S=simulateCoupledDMP(DOFs,options);
 
-
 ind_DMP=2;
-
 %h1=plotSimulations(S,ind_DMP,options);
 h2=plot2DSimulations(S,options);
