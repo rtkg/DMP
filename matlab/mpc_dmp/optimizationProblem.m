@@ -1,4 +1,4 @@
-function [H,f,A,lb,ub,lbA,nE]=optimizationProblem(W,Ph,Bt,options)
+function [H,f,A,lb,ub,lbA,nE]=optimizationProblem(W,Ph,Bt,Ocon,options)
 
 %%%%%%%% GENERAL FORMULATION %%%%%%%%
 
@@ -64,42 +64,31 @@ nE=L*(ws+1);
 % nE=nE+L*(ws+1);
 %%%%%%%% ADDITIONAL CONSTRAINTS FOR OBSTACLE AVOIDANCE %%%%%%%%
 
-for i=1:length(options.Constraints)
-    if ws < 1
-        warning('preview window size has to be at least 1 to perform obstacle avoidance');
-        break;
-    end     
+if ws < 1
+    warning('preview window size has to be at least 1 to perform obstacle avoidance');
+    return;
+end  
 
-    %check if the constraint is active
-    if isempty(intersect(options.Constraints{i}.active,[W{1}.k:W{end}.k]))
-        continue;
-    end    
+%Form appropriate selection matrices to pick position/velocity vector from the state vector zeta
+Sp=kron(eye(L),[1 0]);
+Sv=kron(eye(L),[0 1]);
 
-    N=options.Constraints{i}.N;
-    b=options.Constraints{i}.b;
-    %Form an appropriate selection matrix depending on the constraint type
-    S=zeros(L,2*L);
-    if options.Constraints{i}.type=='p'
-        for l=1:L
-            S(l,2*l-1)=1;
-        end   
-    elseif options.Constraints{i}.type=='v'
-        for l=1:L
-            S(l,2*l)=1;
-        end  
-    else
-        error('Unknown constraint type!');
-    end
+dlt=ph(2*L+1:end);
+Y=zeros(2*L*ws,(nD+1)*L*(ws+1));
+for j=1:ws
+    Y((j-1)*2*L+1:2*L*ws,(j-1)*(nD+1)*L+1:j*(nD+1)*L)=Xi(j*2*L+1:2*L*(ws+1),(j-1)*(nD+1)*L+1:j*(nD+1)*L);  
+end      
 
-    dlt=ph(2*L+1:end);
-    
-    Y=zeros(2*L*ws,(nD+1)*L*(ws+1));
-    for j=1:ws
-        Y((j-1)*2*L+1:2*L*ws,(j-1)*(nD+1)*L+1:j*(nD+1)*L)=Xi(j*2*L+1:2*L*(ws+1),(j-1)*(nD+1)*L+1:j*(nD+1)*L);  
-    end    
-    NS=kron(eye(ws),N*S);
-
+for i=1:length(options.Obstacles)
     %Augment the constraint matrices
-    lbA=[lbA; -b*ones(ws,1)-NS*dlt];
-    A=[A; -NS*Y];
+    if isempty(Ocon{i}.ba)
+        continue;
+    end
+    HSp=[];
+    for j=1:ws
+        HSp=blkdiag(HSp,Ocon{i}.Ha(j,:)*Sp);
+    end
+    
+    lbA=[lbA; -HSp*dlt-Ocon{i}.ba];
+    A=[A; -HSp*Y];
 end    
