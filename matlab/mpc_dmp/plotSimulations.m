@@ -76,19 +76,19 @@ while ~complete
 
     %plot the Controller states    
     subplot(1,3,1);
-    plot(t,Q,'k'); 
+    plot(t,Q,'k--','LineWidth',1); 
     subplot(1,3,2);
-    plot(t,dQ,'k'); 
+    plot(t,dQ,'k--','LineWidth',1); 
     subplot(1,3,3);
-    plot(Q,dQ,'k'); 
+    plot(Q,dQ,'k--','LineWidth',1); 
 
     %plot the predicted controller states
     subplot(1,3,1);
-    h_ptpQ=plot(pt,pQ,'ro','MarkerSize',3,'MarkerFaceColor','r'); 
+    h_ptpQ=plot(pt,pQ,'bo','MarkerSize',4,'MarkerFaceColor','b'); 
     subplot(1,3,2);
-    h_ptpdQ=plot(pt,pdQ,'ro','MarkerSize',3,'MarkerFaceColor','r'); 
+    h_ptpdQ=plot(pt,pdQ,'bo','MarkerSize',4,'MarkerFaceColor','b'); 
     subplot(1,3,3);
-    h_pQpdQ=plot(pQ,pdQ,'ro','MarkerSize',3,'MarkerFaceColor','r'); 
+    h_pQpdQ=plot(pQ,pdQ,'bo','MarkerSize',4,'MarkerFaceColor','b'); 
 
     drawnow;
     %if ~complete, keyboard; end

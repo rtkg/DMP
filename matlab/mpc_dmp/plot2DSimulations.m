@@ -37,13 +37,15 @@ complete=0;
 for l=1:L
     t{l}=[]; Q{l}=[]; dQ{l}=[]; D{l}=[]; dD{l}=[];
 end    
-h_pQ1pQ2=[];  h_pdQ1pdQ2=[]; h_L1L2p=[]; h_L1L2v=[]; ldo=[];
+h_pQ1pQ2=[];  h_pdQ1pdQ2=[];h_Q1Q2=[];  h_dQ1dQ2=[]; h_L1L2p=[]; h_L1L2v=[]; ldo=[];
 
 k_ind=[1:length(S) length(S)+1:length(S)+options.ws];
 while ~complete
     %clear up
     subplot(1,3,1); delete(h_pQ1pQ2);  h_pQ1pQ2=[];
     subplot(1,3,2); delete(h_pdQ1pdQ2); h_pdQ1pdQ2=[];
+        subplot(1,3,1); delete(h_Q1Q2);  h_Q1Q2=[];
+    subplot(1,3,2); delete(h_pQ1pQ2); h_pQ1pQ2=[];
     subplot(1,3,1); delete(h_L1L2p); h_L1L2p=[]; 
     subplot(1,3,2); delete(h_L1L2v); h_L1L2v=[]; 
 
@@ -89,15 +91,15 @@ while ~complete
     
     %plot the Controller states    
     subplot(1,3,1);
-    plot(Q{1},Q{2},'k'); 
+    h_Q1Q2=plot(Q{1},Q{2},'k--','LineWidth',1); 
     subplot(1,3,2);
-    plot(dQ{1},dQ{2},'k');
-    
+    h_dQ1dQ2=plot(dQ{1},dQ{2},'k--','LineWidth',1);
+
     %plot the predicted controller states
     subplot(1,3,1);
-    h_pQ1pQ2=plot(pQ{1},pQ{2},'ro','MarkerSize',3,'MarkerFaceColor','r'); 
+    h_pQ1pQ2=plot(pQ{1},pQ{2},'bo','MarkerSize',4,'MarkerFaceColor','b'); 
     subplot(1,3,2);
-    h_pdQ1pdQ2=plot(pdQ{1},pdQ{2},'ro','MarkerSize',3,'MarkerFaceColor','r'); 
+    h_pdQ1pdQ2=plot(pdQ{1},pdQ{2},'bo','MarkerSize',4,'MarkerFaceColor','b'); 
 
     %plot constraints
     for j=1:length(options.Constraints)
@@ -137,10 +139,10 @@ while ~complete
 
         if options.Constraints{j}.type=='p'
             subplot(1,3,1);
-            h_L1L2p=plot(L(1,:),L(2,:),'b','LineWidth',2);
+            h_L1L2p=plot(L(1,:),L(2,:),'r','LineWidth',2);
         elseif options.Constraints{j}.type=='v'
             subplot(1,3,2);
-            h_L1L2v=plot(L(1,:),L(2,:),'b','LineWidth',2);
+            h_L1L2v=plot(L(1,:),L(2,:),'r','LineWidth',2);
         else
             error('Unknown constraint type!');
         end
@@ -155,7 +157,7 @@ while ~complete
 
     %clear all but the last states to guarantee overlap for plotting in the next step
     for l=1:L
-        t{l}(1:end-1)=[]; Q{l}(1:end-1)=[]; dQ{l}(1:end-1)=[];
+        t{l}(1:end-1)=[]; %Q{l}(1:end-1)=[]; dQ{l}(1:end-1)=[];
         D{l}(1:end-1,:)=[]; dD{l}(1:end-1,:)=[]; ldo(:,1:end-1)=[];
     end
 end
