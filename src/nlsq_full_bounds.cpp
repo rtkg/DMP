@@ -93,7 +93,7 @@ std::vector<int>  getCInd(int const nBF, int const nD)
 int main(int argc, char **argv)
 {
   USING_NAMESPACE_ACADO
-  const double KKT_tol = 1e-4;
+  const double KKT_tol = 1e-3;
 
   //READ THE DEMO LENGTHS & nBF FROM THE COMMAND LINE
   std::deque<std::string> args(argv + 1, argv + argc + !argc);
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
   algorithm.set( KKT_TOLERANCE, KKT_tol);
   algorithm.set( ABSOLUTE_TOLERANCE, 1e-4);
   algorithm.set( PRINTLEVEL,HIGH);
-  algorithm.set( MAX_NUM_ITERATIONS, 4000 );
+  algorithm.set( MAX_NUM_ITERATIONS, 3000 );
   algorithm.set (PRINT_COPYRIGHT, NO);
   // algorithm.set (PRINT_SCP_METHOD_PROFILE, YES);
   algorithm.set( HESSIAN_APPROXIMATION, BLOCK_BFGS_UPDATE); 
@@ -181,14 +181,19 @@ int main(int argc, char **argv)
   // algorithm << logRecord;
 
   //SOLVING
+  //pI.printToFile((path+"solution.dat").c_str(),"",PS_PLAIN);
+  returnValue status;
   double clock1 = clock();
-  algorithm.solve();
+ status=algorithm.solve();
   double clock2 = clock();
   Vector solution;
   algorithm.getParameters(solution);
   // solution.print("optimal solution \n");
-  solution.printToFile((path+"solution.dat").c_str(),"",PS_PLAIN);
-
+//   if( status.getLevel()==LVL_ERROR)
+//  pI.printToFile((path+"solution.dat").c_str(),"",PS_PLAIN);
+// else
+//   solution.printToFile((path+"solution.dat").c_str(),"",PS_PLAIN);
+ solution.printToFile((path+"solution.dat").c_str(),"",PS_PLAIN);
   printf("\n computation time (ACADO) = %.16e \n", (clock2-clock1)/CLOCKS_PER_SEC);
 
   return 0;

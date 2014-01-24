@@ -1,4 +1,4 @@
-function h=plot2DSimulations(S,options)
+function h=plot2DSimulations(S,options,varargin)
 
 plot_step=options.plot_step;
 L=length(S{1}{1}.z)/2;
@@ -13,9 +13,13 @@ elseif isempty(plot_step)
 end
 
 %set plot properties
-h=figure; figure(h); scrsz = get(0,'ScreenSize'); set(h,'position',scrsz*0.76);
+if isempty(varargin)
+    h=figure; 
+else
+    h=varargin{1};
+end
+figure(h); scrsz = get(0,'ScreenSize'); set(h,'position',scrsz*0.76);
 subplot(1,3,1);
-title('Positions');
 xlabel('q_1');ylabel('q_2');
 grid on; hold on;
 subplot(1,3,2);
@@ -95,9 +99,9 @@ while ~complete
     
     %plot the Controller states    
     subplot(1,3,1);
-    plot(Q{1},Q{2},'k'); 
+    plot(Q{1},Q{2},'k--','LineWidth',1); 
     subplot(1,3,2);
-    plot(dQ{1},dQ{2},'k');
+    plot(dQ{1},dQ{2},'k--','LineWidth',1);
     
     %plot the predicted controller states
     subplot(1,3,1);
@@ -105,58 +109,11 @@ while ~complete
     subplot(1,3,2);
     h_pdQ1pdQ2=plot(pdQ{1},pdQ{2},'ro','MarkerSize',3,'MarkerFaceColor','r'); 
 
-    % %plot constraints
-    % for j=1:length(options.Constraints)
-
-    %     % options.Constraints{j}.active
-    %     %check if the constraint is active
-
-    %     if isempty(intersect(options.Constraints{j}.active,k_ind))
-    %         continue;
-    %     end
-    %     % elseif length(intersect(options.Constraints{j}.active,k_ind)) < length(k_ind)
-    %     %     clr=[0.792 0.883 1];
-    %     % else 
-    %     %     clr=[0 0 1];
-    %     % end
-
-
-    %     %if .....
-    %     %else
-    %     %  continue;
-    %     %end
-        
-    %     N=options.Constraints{j}.N;
-    %     b=options.Constraints{j}.b;
-        
-    %     %find 2 points outside the bounding box
-    %     L=zeros(2,2);
-    %     if abs(N(2))>0.01
-    %         L(1,1)=max([options.Qplot_window_size(2) options.dQplot_window_size(2)]);
-    %         L(1,2)=min([options.Qplot_window_size(1) options.dQplot_window_size(1)]);
-    %         L(2,1:2)=(repmat(-b,1,2)-N(1)*L(1,1:2))/N(2);
-    %     else    
-    %         L(2,1)=max([options.Qplot_window_size(2) options.dQplot_window_size(2)]);
-    %         L(2,2)=min([options.Qplot_window_size(1) options.dQplot_window_size(1)]);
-    %         L(1,1:2)=(repmat(-b,1,2)-N(2)*L(1,1:2))/N(1);
-    %     end
-
-    %     if options.Constraints{j}.type=='p'
-    %         subplot(1,3,1);
-    %         h_L1L2p=plot(L(1,:),L(2,:),'b','LineWidth',2);
-    %     elseif options.Constraints{j}.type=='v'
-    %         subplot(1,3,2);
-    %         h_L1L2v=plot(L(1,:),L(2,:),'b','LineWidth',2);
-    %     else
-    %         error('Unknown constraint type!');
-    %     end
-    % end
-
     subplot(1,3,3);
     plot(t{1},ldo(1,:),'b'); hold on; grid on;
     plot(t{1},ldo(2,:),'r');
     
-    subplot(1,3,1);
+    %subplot(1,3,1);
 
     
     

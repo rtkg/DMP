@@ -44,9 +44,8 @@ for i=1:length(options.Obstacles)
             aC{i}.Ha=[aC{i}.Ha; H(ac_ind,:)];
             aC{i}.ba=[aC{i}.ba; b(ac_ind)*(1+eps)]; 
         else
-            
             %velocity ray doesn't intersect obstacle -> add zeros
-            aC{i}.Ha=[aC{i}.Ha,zeros(1,2)];
+            aC{i}.Ha=[aC{i}.Ha;zeros(1,2)];
             aC{i}.ba=[aC{i}.ba; 0];
         end
 

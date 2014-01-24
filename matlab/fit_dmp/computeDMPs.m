@@ -81,15 +81,19 @@ DMP.t_learn=t_init+t_fit;
 
 Tend=1;
 euler_int=1;
+%figure;   
 for i=1:length(demos)     
     t=demos{i}.D(:,1);
     w=p((2+nBF)*(i-1)+1:(2+nBF)*i);
-    
+    wI=pI((2+nBF)*(i-1)+1:(2+nBF)*i);
+
     ind_e=length(t);
     t=0:Td:t(end)*Tau*Tend;
     x0=[0;demos{i}.D(1,2:3)'];
     
     DMP.param{i}.w=w;
+    DMP.param{i}.wI=wI;
+   DMP.param{i}.pBFI=pBFI;
     DMP.param{i}.pBF=pBF;
     DMP.param{i}.q0_ref=x0(2);
     DMP.param{i}.D=demos{i}.D;
@@ -117,7 +121,16 @@ for i=1:length(demos)
         %plot(T,ddx,'k--');
         %title(strcat(DMP.name,'-',joint,' Acceleration'));
     else
-        [T,X,f] = eulerIntegrator([t(1);t(end)],Td,x0,DMP.param{i},Tau);      
+        [T,X,f] = eulerIntegrator([t(1);t(end)],Td,x0,DMP.param{i},Tau);   
+       if (abs(X(end,2)) > 1e-1)
+            %HHHAAAACCKKK to detect unsuccesful solutions
+DMP.param{i}.w=DMP.param{i}.wI;
+DMP.param{i}.pBF=DMP.param{i}.pBFI;
+disp('Detected unsuccesfull ACADO solution ...');
+
+             [T,X,f] = eulerIntegrator([t(1);t(end)],Td,x0,DMP.param{i},Tau); 
+         end   
+
         % subplot(4,1,1);  hold on; grid on;
         % plot(T(end),0,'b.','MarkerSize',20);
         % plot(demos{i}.D(:,1),demos{i}.D(:,2),'r');

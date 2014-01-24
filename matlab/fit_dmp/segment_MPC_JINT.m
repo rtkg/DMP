@@ -11,7 +11,11 @@ for k=1:length(K)
                 
                 E=[E; K{k}.C{d}.PC{i}.DMP{1}.param{j}.rep_err.E];
                 sq_sum=[sq_sum; K{k}.C{d}.PC{i}.DMP{1}.param{j}.rep_err.sq_sum];
- 
+ if sq_sum(end,1)>1e5
+      K{k}.C{d}.PC{i}
+     K{k}.C{d}.PC{i}.DMP{1}
+     % keyboard
+ end
             end
         end
     end
